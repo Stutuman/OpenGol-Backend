@@ -12,74 +12,70 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FieldsController = void 0;
+exports.ClubController = void 0;
 const common_1 = require("@nestjs/common");
-const fields_service_1 = require("./fields.service");
-const create_field_dto_1 = require("./dto/create-field.dto");
-const update_field_dto_1 = require("./dto/update-field.dto");
-const swagger_1 = require("@nestjs/swagger");
-const auth_guard_1 = require("../auth/auth.guard");
-let FieldsController = class FieldsController {
-    fieldsService;
-    constructor(fieldsService) {
-        this.fieldsService = fieldsService;
+const club_service_1 = require("./club.service");
+const create_club_dto_1 = require("./dto/create-club.dto");
+const update_club_dto_1 = require("./dto/update-club.dto");
+let ClubController = class ClubController {
+    clubService;
+    constructor(clubService) {
+        this.clubService = clubService;
     }
-    create(createFieldDto) {
-        return this.fieldsService.createField(createFieldDto);
+    create(createClubDto) {
+        return this.clubService.create(createClubDto);
     }
     findAll() {
-        return this.fieldsService.findAll();
+        return this.clubService.findAll();
     }
     findOne(id) {
-        return this.fieldsService.findOne(+id);
+        return this.clubService.findOne(+id);
     }
-    update(id, updateFieldDto) {
-        return this.fieldsService.update(+id, updateFieldDto);
+    update(id, updateClubDto) {
+        return this.clubService.update(+id, updateClubDto);
     }
     remove(id) {
-        return this.fieldsService.remove(+id);
+        return this.clubService.remove(+id);
     }
 };
-exports.FieldsController = FieldsController;
+exports.ClubController = ClubController;
 __decorate([
-    (0, swagger_1.ApiBearerAuth)('access-token'),
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_field_dto_1.CreateFieldDto]),
+    __metadata("design:paramtypes", [create_club_dto_1.CreateClubDto]),
     __metadata("design:returntype", void 0)
-], FieldsController.prototype, "create", null);
+], ClubController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], FieldsController.prototype, "findAll", null);
+], ClubController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], FieldsController.prototype, "findOne", null);
+], ClubController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_field_dto_1.UpdateFieldDto]),
+    __metadata("design:paramtypes", [String, update_club_dto_1.UpdateClubDto]),
     __metadata("design:returntype", void 0)
-], FieldsController.prototype, "update", null);
+], ClubController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], FieldsController.prototype, "remove", null);
-exports.FieldsController = FieldsController = __decorate([
-    (0, common_1.Controller)('fields'),
-    __metadata("design:paramtypes", [fields_service_1.FieldsService])
-], FieldsController);
-//# sourceMappingURL=fields.controller.js.map
+], ClubController.prototype, "remove", null);
+exports.ClubController = ClubController = __decorate([
+    (0, common_1.Controller)('club'),
+    __metadata("design:paramtypes", [club_service_1.ClubService])
+], ClubController);
+//# sourceMappingURL=club.controller.js.map

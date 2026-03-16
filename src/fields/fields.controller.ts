@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { FieldsService } from './fields.service';
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/auth.guard';
 @Controller('fields')
 export class FieldsController {
   constructor(private readonly fieldsService: FieldsService) {}
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
   @Post()
   create(@Body() createFieldDto: CreateFieldDto) {
-    return this.fieldsService.create(createFieldDto);
+    return this.fieldsService.createField(createFieldDto);
   }
 
   @Get()
