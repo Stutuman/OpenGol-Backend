@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { UsuariosModule } from 'src/usuarios/usuarios.module';
+import { UserModule } from 'src/users/users.module';
 import { AuthController } from './auth.controller';
 
 @Module({
   imports:[
-    UsuariosModule,
+    UserModule,
     JwtModule.register({
       global:true,//esto permite usar JTW en cualquier parte del proyecto
       secret:process.env.JWT_SECRET || 'MiSecretoOpenGol2026',

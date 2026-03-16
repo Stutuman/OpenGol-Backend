@@ -10,7 +10,7 @@ exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const jwt_1 = require("@nestjs/jwt");
-const usuarios_module_1 = require("../usuarios/usuarios.module");
+const users_module_1 = require("../users/users.module");
 const auth_controller_1 = require("./auth.controller");
 let AuthModule = class AuthModule {
 };
@@ -18,7 +18,7 @@ exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            usuarios_module_1.UsuariosModule,
+            users_module_1.UserModule,
             jwt_1.JwtModule.register({
                 global: true,
                 secret: process.env.JWT_SECRET || 'MiSecretoOpenGol2026',
