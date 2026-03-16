@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsuariosModule } from './usuarios/usuarios.module';
+import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { FieldsModule } from './fields/fields.module';
 
 @Module({
   imports: [
@@ -21,10 +22,12 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
       // IMPORTANTE: synchronize en false porque nosotros ya creamos la tabla a mano en pgAdmin
-      synchronize: false, 
+      synchronize: true, 
+      //dropSchema: true,
     }),
-    UsuariosModule,
+    UserModule,
     AuthModule,
+    FieldsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

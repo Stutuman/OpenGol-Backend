@@ -44,27 +44,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-const usuarios_service_1 = require("../usuarios/usuarios.service");
+const users_service_1 = require("../users/users.service");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
 let AuthService = class AuthService {
-    usuariosService;
+    usersService;
     jwtService;
-    constructor(usuariosService, jwtService) {
-        this.usuariosService = usuariosService;
+    constructor(usersService, jwtService) {
+        this.usersService = usersService;
         this.jwtService = jwtService;
     }
     async login(datosLogin) {
         const { email, password } = datosLogin;
-        const usuarioEncontrado = await this.usuariosService.buscarPorEmail(email);
+        const usuarioEncontrado = await this.usersService.findByEmail(email);
         if (!usuarioEncontrado) {
             throw new common_1.UnauthorizedException('Credenciales inválidas. Revisá tu correo o contraseña.');
         }
-        const laClaveCoincide = await bcrypt.compare(password, usuarioEncontrado.password_hash);
+        const laClaveCoincide = await bcrypt.compare(password, usuarioEncontrado.passwordHash);
         if (!laClaveCoincide) {
             throw new common_1.UnauthorizedException('Credenciales inválidas. Revisá tu correo o contraseña.');
         }
-        const { password_hash, ...usuarioSeguro } = usuarioEncontrado;
+        const { passwordHash, ...usuarioSeguro } = usuarioEncontrado;
         const payload = { sub: usuarioEncontrado.id, email: usuarioEncontrado.email };
         const tokenVip = await this.jwtService.signAsync(payload);
         return {
@@ -77,7 +77,7 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [usuarios_service_1.UsuariosService,
+    __metadata("design:paramtypes", [users_service_1.UsersService,
         jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

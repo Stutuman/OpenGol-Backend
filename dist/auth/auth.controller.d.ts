@@ -1,17 +1,17 @@
 import { AuthService } from './auth.service';
-import { LoginUsuarioDto } from '../usuarios/dto/login-usuario.dto';
+import { LoginUserDto } from '../users/dto/login-user.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    iniciarSesion(body: LoginUsuarioDto): Promise<{
+    iniciarSesion(body: LoginUserDto): Promise<{
         mensaje: string;
         usuario: {
             id: number;
-            nombre: string;
+            name: string;
             email: string;
-            telefono: string;
-            nivel_juego: string;
-            fecha_registro: Date;
+            phone: string;
+            role: import("../users/entities/user.entity").UserRole;
+            createdAt: Date;
         };
         access_token: string;
     }>;

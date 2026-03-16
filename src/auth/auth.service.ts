@@ -1,32 +1,32 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsuariosService } from 'src/usuarios/usuarios.service';
+import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginUsuarioDto } from 'src/usuarios/dto/login-usuario.dto';
+import { LoginUserDto } from 'src/users/dto/login-user.dto';
 @Injectable()
 export class AuthService {
     constructor(
-        private usuariosService: UsuariosService,
+        private usersService: UsersService,
         private jwtService: JwtService
     ){}
-    async login(datosLogin: LoginUsuarioDto) {
+    async login(datosLogin: LoginUserDto) {
     const { email, password } = datosLogin;
 
     // 1. Usamos la función nuevita que creamos en el paso anterior
-    const usuarioEncontrado = await this.usuariosService.buscarPorEmail(email);
+    const usuarioEncontrado = await this.usersService.findByEmail(email);
 
     if (!usuarioEncontrado) {
       throw new UnauthorizedException('Credenciales inválidas. Revisá tu correo o contraseña.');
     }
 
     // 2. Comparamos claves
-    const laClaveCoincide = await bcrypt.compare(password, usuarioEncontrado.password_hash);
+    const laClaveCoincide = await bcrypt.compare(password, usuarioEncontrado.passwordHash);
     if (!laClaveCoincide) {
       throw new UnauthorizedException('Credenciales inválidas. Revisá tu correo o contraseña.');
     }
 
     // 3. Limpiamos y fabricamos el Token
-    const { password_hash, ...usuarioSeguro } = usuarioEncontrado;
+    const { passwordHash, ...usuarioSeguro } = usuarioEncontrado;
     const payload = { sub: usuarioEncontrado.id, email: usuarioEncontrado.email };
     const tokenVip = await this.jwtService.signAsync(payload);
 

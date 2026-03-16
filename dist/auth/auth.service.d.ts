@@ -1,19 +1,19 @@
-import { UsuariosService } from 'src/usuarios/usuarios.service';
+import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUsuarioDto } from 'src/usuarios/dto/login-usuario.dto';
+import { LoginUserDto } from 'src/users/dto/login-user.dto';
 export declare class AuthService {
-    private usuariosService;
+    private usersService;
     private jwtService;
-    constructor(usuariosService: UsuariosService, jwtService: JwtService);
-    login(datosLogin: LoginUsuarioDto): Promise<{
+    constructor(usersService: UsersService, jwtService: JwtService);
+    login(datosLogin: LoginUserDto): Promise<{
         mensaje: string;
         usuario: {
             id: number;
-            nombre: string;
+            name: string;
             email: string;
-            telefono: string;
-            nivel_juego: string;
-            fecha_registro: Date;
+            phone: string;
+            role: import("../users/entities/user.entity").UserRole;
+            createdAt: Date;
         };
         access_token: string;
     }>;
