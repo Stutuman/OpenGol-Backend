@@ -6,20 +6,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FieldsModule = void 0;
+exports.ClubService = void 0;
 const common_1 = require("@nestjs/common");
-const fields_service_1 = require("./fields.service");
-const fields_controller_1 = require("./fields.controller");
-const typeorm_1 = require("@nestjs/typeorm");
-const field_entity_1 = require("./entities/field.entity");
-let FieldsModule = class FieldsModule {
+let ClubService = class ClubService {
+    create(createClubDto) {
+        return 'This action adds a new club';
+    }
+    findAll() {
+        return `This action returns all club`;
+    }
+    findOne(id) {
+        return `This action returns a #${id} club`;
+    }
+    update(id, updateClubDto) {
+        return `This action updates a #${id} club`;
+    }
+    remove(id) {
+        return `This action removes a #${id} club`;
+    }
 };
-exports.FieldsModule = FieldsModule;
-exports.FieldsModule = FieldsModule = __decorate([
-    (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([field_entity_1.Field])],
-        controllers: [fields_controller_1.FieldsController],
-        providers: [fields_service_1.FieldsService],
-    })
-], FieldsModule);
-//# sourceMappingURL=fields.module.js.map
+exports.ClubService = ClubService;
+exports.ClubService = ClubService = __decorate([
+    (0, common_1.Injectable)()
+], ClubService);
+//# sourceMappingURL=club.service.js.map

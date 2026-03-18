@@ -1,9 +1,21 @@
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
+import { Field } from './entities/field.entity';
+import { Repository } from 'typeorm';
 export declare class FieldsService {
-    create(createFieldDto: CreateFieldDto): string;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateFieldDto: UpdateFieldDto): string;
-    remove(id: number): string;
+    private fieldRepository;
+    constructor(fieldRepository: Repository<Field>);
+    createField(fieldDto: CreateFieldDto): Promise<{
+        message: string;
+        field: Field;
+    }>;
+    findAll(): Promise<Field[]>;
+    findByClub(clubId: number): Promise<Field[]>;
+    update(id: number, updateFieldDto: UpdateFieldDto): Promise<{
+        message: string;
+        field: Field;
+    }>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }

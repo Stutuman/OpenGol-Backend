@@ -19,14 +19,14 @@ export class UsersController {
     return this.usersService.getProfile(userId);
   }
 
-  @Post('register') // ⚠️ La ruta ahora es /api/users/register
+  @Post('register') 
   registerUser(@Body() registerUserDto: RegisterUserDto) {
     return this.usersService.register(registerUserDto); 
   }
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
-  @Patch('profile') // ⚠️ La ruta ahora es /api/users/profile
+  @Patch('profile') 
   updateUser(
     @Req() request, 
     @Body() body: UpdateUserDto
@@ -34,4 +34,5 @@ export class UsersController {
     const userId = request.user.sub; 
     return this.usersService.update(userId, body);
   }
+  
 }

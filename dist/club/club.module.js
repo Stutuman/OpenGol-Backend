@@ -6,20 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FieldsModule = void 0;
+exports.ClubModule = void 0;
 const common_1 = require("@nestjs/common");
-const fields_service_1 = require("./fields.service");
-const fields_controller_1 = require("./fields.controller");
-const typeorm_1 = require("@nestjs/typeorm");
-const field_entity_1 = require("./entities/field.entity");
-let FieldsModule = class FieldsModule {
+const club_service_1 = require("./club.service");
+const club_controller_1 = require("./club.controller");
+let ClubModule = class ClubModule {
 };
-exports.FieldsModule = FieldsModule;
-exports.FieldsModule = FieldsModule = __decorate([
+exports.ClubModule = ClubModule;
+exports.ClubModule = ClubModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([field_entity_1.Field])],
-        controllers: [fields_controller_1.FieldsController],
-        providers: [fields_service_1.FieldsService],
+        controllers: [club_controller_1.ClubController],
+        providers: [club_service_1.ClubService],
     })
-], FieldsModule);
-//# sourceMappingURL=fields.module.js.map
+], ClubModule);
+//# sourceMappingURL=club.module.js.map
