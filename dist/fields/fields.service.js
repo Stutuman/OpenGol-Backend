@@ -36,8 +36,33 @@ let FieldsService = class FieldsService {
             throw new common_1.InternalServerErrorException('An error occurred while registering the user');
         }
     }
-    findAll() {
-        return `This action returns all fields`;
+    async findAll() {
+        try {
+            const fields = await this.fieldRepository.find();
+            return fields;
+        }
+        catch (error) {
+            console.error(error);
+            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+        }
+    }
+    async findByClub(clubId) {
+        try {
+            const fields = await this.fieldRepository.find({
+                where: { clubId: clubId },
+            });
+            if (fields.length === 0) {
+                throw new common_1.NotFoundException(`no fields found for club with id ${clubId}`);
+            }
+            return fields;
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            console.error(error);
+            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+        }
     }
     findOne(id) {
         return `This action returns a #${id} field`;

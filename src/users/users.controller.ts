@@ -34,4 +34,5 @@ export class UsersController {
     const userId = request.user.sub; 
     return this.usersService.update(userId, body);
   }
+  
 }

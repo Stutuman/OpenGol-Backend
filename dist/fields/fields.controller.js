@@ -19,6 +19,7 @@ const create_field_dto_1 = require("./dto/create-field.dto");
 const update_field_dto_1 = require("./dto/update-field.dto");
 const swagger_1 = require("@nestjs/swagger");
 const auth_guard_1 = require("../auth/auth.guard");
+const swagger_2 = require("@nestjs/swagger");
 let FieldsController = class FieldsController {
     fieldsService;
     constructor(fieldsService) {
@@ -29,6 +30,9 @@ let FieldsController = class FieldsController {
     }
     findAll() {
         return this.fieldsService.findAll();
+    }
+    findFieldsByClub(clubId) {
+        return this.fieldsService.findByClub(clubId);
     }
     findOne(id) {
         return this.fieldsService.findOne(+id);
@@ -51,11 +55,23 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "create", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "findAll", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Get)('club/:clubId'),
+    (0, swagger_2.ApiParam)({ name: 'clubId', description: 'ID del club', example: 0 }),
+    __param(0, (0, common_1.Param)('clubId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], FieldsController.prototype, "findFieldsByClub", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -79,7 +95,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "remove", null);
 exports.FieldsController = FieldsController = __decorate([
-    (0, common_1.Controller)('fields'),
+    (0, swagger_2.ApiTags)('fields'),
+    (0, common_1.Controller)('api/fields'),
     __metadata("design:paramtypes", [fields_service_1.FieldsService])
 ], FieldsController);
 //# sourceMappingURL=fields.controller.js.map

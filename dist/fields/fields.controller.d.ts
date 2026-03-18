@@ -8,7 +8,8 @@ export declare class FieldsController {
         message: string;
         field: import("./entities/field.entity").Field;
     }>;
-    findAll(): string;
+    findAll(): Promise<import("./entities/field.entity").Field[]>;
+    findFieldsByClub(clubId: number): Promise<import("./entities/field.entity").Field[]>;
     findOne(id: string): string;
     update(id: string, updateFieldDto: UpdateFieldDto): string;
     remove(id: string): string;

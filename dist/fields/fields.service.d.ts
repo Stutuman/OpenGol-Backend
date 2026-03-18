@@ -9,7 +9,8 @@ export declare class FieldsService {
         message: string;
         field: Field;
     }>;
-    findAll(): string;
+    findAll(): Promise<Field[]>;
+    findByClub(clubId: number): Promise<Field[]>;
     findOne(id: number): string;
     update(id: number, updateFieldDto: UpdateFieldDto): string;
     remove(id: number): string;
