@@ -56,15 +56,35 @@ export class FieldsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} field`;
+  async update(id: number, updateFieldDto: UpdateFieldDto) {
+    const foundField= await this.fieldRepository.findOneBy({id});
+    if(!foundField){
+      throw new NotFoundException(`The field with id ${id} doesnt exist`)
+    }
+    const updateField= this.fieldRepository.merge(foundField,updateFieldDto);
+    await this.fieldRepository.save(updateField);
+    return{
+      message:'field updated successfully',
+      field:updateField
+    }
   }
 
-  update(id: number, updateFieldDto: UpdateFieldDto) {
-    return `This action updates a #${id} field`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} field`;
+  async remove(id: number) {
+    try {
+      const foundField= await this.fieldRepository.findOneBy({id});
+      if(!foundField){
+        throw new NotFoundException(`field with id ${id} does not exist`);
+      }
+      await this.fieldRepository.softDelete(id);
+      return{
+        message: `Field with id ${id} successfully Deleted`
+      };
+    }catch(error){
+      if(error instanceof NotFoundException){
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException('An error occurred while registering the user');
+    }
   }
 }

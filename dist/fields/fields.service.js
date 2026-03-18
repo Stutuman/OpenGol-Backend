@@ -64,14 +64,36 @@ let FieldsService = class FieldsService {
             throw new common_1.InternalServerErrorException('An error occurred while registering the user');
         }
     }
-    findOne(id) {
-        return `This action returns a #${id} field`;
+    async update(id, updateFieldDto) {
+        const foundField = await this.fieldRepository.findOneBy({ id });
+        if (!foundField) {
+            throw new common_1.NotFoundException(`The field with id ${id} doesnt exist`);
+        }
+        const updateField = this.fieldRepository.merge(foundField, updateFieldDto);
+        await this.fieldRepository.save(updateField);
+        return {
+            message: 'field updated successfully',
+            field: updateField
+        };
     }
-    update(id, updateFieldDto) {
-        return `This action updates a #${id} field`;
-    }
-    remove(id) {
-        return `This action removes a #${id} field`;
+    async remove(id) {
+        try {
+            const foundField = await this.fieldRepository.findOneBy({ id });
+            if (!foundField) {
+                throw new common_1.NotFoundException(`field with id ${id} does not exist`);
+            }
+            await this.fieldRepository.softDelete(id);
+            return {
+                message: `Field with id ${id} successfully Deleted`
+            };
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            console.error(error);
+            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+        }
     }
 };
 exports.FieldsService = FieldsService;

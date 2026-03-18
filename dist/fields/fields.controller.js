@@ -34,14 +34,11 @@ let FieldsController = class FieldsController {
     findFieldsByClub(clubId) {
         return this.fieldsService.findByClub(clubId);
     }
-    findOne(id) {
-        return this.fieldsService.findOne(+id);
-    }
     update(id, updateFieldDto) {
-        return this.fieldsService.update(+id, updateFieldDto);
+        return this.fieldsService.update(id, updateFieldDto);
     }
     remove(id) {
-        return this.fieldsService.remove(+id);
+        return this.fieldsService.remove(id);
     }
 };
 exports.FieldsController = FieldsController;
@@ -73,25 +70,51 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "findFieldsByClub", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], FieldsController.prototype, "findOne", null);
-__decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, swagger_2.ApiParam)({
+        name: 'id',
+        description: 'El ID único de la cancha que querés modificar',
+        type: Number,
+        example: 1,
+        required: true,
+    }),
+    (0, swagger_2.ApiBody)({
+        description: 'Enviá únicamente los campos que querés modificar',
+        type: update_field_dto_1.UpdateFieldDto,
+        examples: {
+            ejemploPrecio: {
+                summary: 'Actualizar precio y descripción',
+                value: {
+                    pricePerHour: 25000,
+                    description: "Cancha 1 - Ahora con césped sintético nuevo"
+                }
+            },
+            ejemploEstado: {
+                summary: 'Pausar alquiler de cancha',
+                value: {
+                    isActive: false
+                }
+            }
+        }
+    }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_field_dto_1.UpdateFieldDto]),
+    __metadata("design:paramtypes", [Number, update_field_dto_1.UpdateFieldDto]),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "update", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, swagger_2.ApiOperation)({ summary: 'Eliminar una cancha (Soft Delete)' }),
+    (0, swagger_2.ApiParam)({ name: 'id', description: 'ID de la cancha a dar de baja', type: Number, example: 1 }),
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "remove", null);
 exports.FieldsController = FieldsController = __decorate([

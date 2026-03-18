@@ -11,7 +11,11 @@ export declare class FieldsService {
     }>;
     findAll(): Promise<Field[]>;
     findByClub(clubId: number): Promise<Field[]>;
-    findOne(id: number): string;
-    update(id: number, updateFieldDto: UpdateFieldDto): string;
-    remove(id: number): string;
+    update(id: number, updateFieldDto: UpdateFieldDto): Promise<{
+        message: string;
+        field: Field;
+    }>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }

@@ -10,7 +10,11 @@ export declare class FieldsController {
     }>;
     findAll(): Promise<import("./entities/field.entity").Field[]>;
     findFieldsByClub(clubId: number): Promise<import("./entities/field.entity").Field[]>;
-    findOne(id: string): string;
-    update(id: string, updateFieldDto: UpdateFieldDto): string;
-    remove(id: string): string;
+    update(id: number, updateFieldDto: UpdateFieldDto): Promise<{
+        message: string;
+        field: import("./entities/field.entity").Field;
+    }>;
+    remove(id: number): Promise<{
+        message: string;
+    }>;
 }
