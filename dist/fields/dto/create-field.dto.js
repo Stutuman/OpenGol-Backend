@@ -19,7 +19,7 @@ class CreateFieldDto {
     format;
     photos;
     pricePerHour;
-    freeVancellationHours;
+    freeCancellationHours;
     depositPrice;
     clubId;
 }
@@ -67,7 +67,7 @@ __decorate([
     (0, class_validator_1.Min)(0),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
-], CreateFieldDto.prototype, "freeVancellationHours", void 0);
+], CreateFieldDto.prototype, "freeCancellationHours", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'Precio de la seña si aplica', example: 5000, default: 0 }),
     (0, class_validator_1.IsNumber)(),

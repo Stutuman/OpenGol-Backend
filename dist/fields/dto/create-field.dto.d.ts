@@ -5,7 +5,7 @@ export declare class CreateFieldDto {
     format: number;
     photos?: string[];
     pricePerHour: number;
-    freeVancellationHours?: number;
+    freeCancellationHours?: number;
     depositPrice: number;
     clubId: number;
 }

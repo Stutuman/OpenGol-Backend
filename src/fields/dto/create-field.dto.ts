@@ -31,7 +31,7 @@ export class CreateFieldDto {
     @IsInt()
     @Min(0)
     @IsOptional()
-    freeVancellationHours?:number;
+    freeCancellationHours?:number;
     @ApiPropertyOptional({ description: 'Precio de la seña si aplica', example: 5000, default: 0 })
     @IsNumber()
     @Min(0)
