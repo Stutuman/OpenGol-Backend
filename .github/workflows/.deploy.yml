@@ -10,19 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Rebuild SSH key
+      - name: Write SSH key
+        shell: bash
         run: |
-          echo "${{ secrets.DEPLOY_SSH_KEY_B64 }}" | base64 -d > deploy_key
+          cat > deploy_key <<'EOF'
+          ${{ secrets.DEPLOY_SSH_KEY }}
+          EOF
           chmod 600 deploy_key
+          head -n 1 deploy_key
+          ssh-keygen -y -f deploy_key > /dev/null
 
       - name: Add server to known_hosts
+        shell: bash
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H 143.47.44.40 >> ~/.ssh/known_hosts
 
-      - name: Deploy
+      - name: Deploy on server
+        shell: bash
         run: |
-          ssh -i deploy_key ubuntu@143.47.44.40 << 'EOF'
+          ssh -o StrictHostKeyChecking=yes -i deploy_key ubuntu@143.47.44.40 << 'EOF'
             set -e
             cd ~/OpenGol-Backend
             git pull origin main
