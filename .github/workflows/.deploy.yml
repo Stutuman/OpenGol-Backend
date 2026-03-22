@@ -10,21 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Chequear Vars y Red
-      run: |
-        echo "SERVER_HOST: ${{ secrets.SERVER_HOST }}"
-        ping -c 3 ${{ secrets.SERVER_HOST }} || echo "No responde a ping"
-        nc -vz ${{ secrets.SERVER_HOST }} 22 || echo "Puerto 22 no disponible"
-    - name: Deploy to Oracle server
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: 143.47.44.40
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        port: 22
-        script: |
-          set -e
-          cd ~/OpenGol-Backend
-          git pull origin main
-          docker compose up -d --build
-          docker image prune -f
+      - name: Rebuild SSH key from base64
+        run: |
+          echo "${{ secrets.DEPLOY_SSH_KEY_B64 }}" | base64 -d > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+      - name: Deploy to Oracle server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 143.47.44.40
+          username: ubuntu
+          key_path: /tmp/deploy_key
+          port: 22
+          script: |
+            set -e
+            cd ~/OpenGol-Backend
+            git pull origin main
+            docker compose up -d --build
+            docker image prune -f
