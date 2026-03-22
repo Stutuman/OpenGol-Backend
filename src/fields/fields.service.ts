@@ -38,6 +38,22 @@ export class FieldsService {
     }
   }
 
+  async findOne(id: number) {
+    try {
+      const field = await this.fieldRepository.findOneBy({ id });
+      if (!field) {
+        throw new NotFoundException(`field with id ${id} does not exist`);
+      }
+      return field;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error(error);
+      throw new InternalServerErrorException('An error occurred while registering the user');
+    }
+  }
+
   async findByClub(clubId : number){
     try {
       const fields= await this.fieldRepository.find({
