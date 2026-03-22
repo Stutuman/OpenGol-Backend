@@ -19,13 +19,7 @@ jobs:
           port: 22
           script: |
             set -e
-
             cd ~/OpenGol-Backend
-
-            cat > .env <<'EOF'
-            ${{ secrets.APP_ENV_FILE }}
-            EOF
-
             git pull origin main
             docker compose up -d --build
             docker image prune -f
