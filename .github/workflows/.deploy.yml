@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Chequear Vars y Red
+      run: |
+        echo "SERVER_HOST: ${{ secrets.SERVER_HOST }}"
+        ping -c 3 ${{ secrets.SERVER_HOST }} || echo "No responde a ping"
+        nc -vz ${{ secrets.SERVER_HOST }} 22 || echo "Puerto 22 no disponible"
     - name: Check server connectivity
       run: nslookup ${{ secrets.SERVER_HOST }} && ping -c 4 ${{ secrets.SERVER_HOST }}
     - name: Deploy to Oracle server
