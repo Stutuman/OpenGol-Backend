@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import { CreateClubDto } from './dto/create-club.dto';
 import { UpdateClubDto } from './dto/update-club.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -86,11 +86,36 @@ export class ClubService {
     }
   }
 
-  update(id: number, updateClubDto: UpdateClubDto) {
-    return `This action updates a #${id} club`;
+  async update(id:number,updateClubDto:UpdateClubDto,userId:number){
+    const club = await this.clubRepository.findOneBy({id});
+    if(!club){
+      throw new NotFoundException(`el club con ID ${id} no existe`);
+    }
+    if(club.ownerId !== userId){
+      throw new UnauthorizedException(`no tienes permisos para actualizar un club que no te pertenec`);
+    }
+
+    const updatedClub = this.clubRepository.merge(club,updateClubDto);
+    await this.clubRepository.save(updatedClub);
+    return{
+      message:'Club update succesfully',
+      club:updatedClub
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} club`;
+  async remove(id:number, userId:number){
+    const club = await this.clubRepository.findOneBy({id});
+    if (!club) {
+      throw new NotFoundException(`El club con ID ${id} no existe.`);
+    }
+
+    if (club.ownerId !== userId) {
+      throw new UnauthorizedException('No tienes permiso para eliminar este club.');
+    }
+
+    // Usamos softDelete para que quede el registro en la base de datos (deleted_at)
+    await this.clubRepository.softDelete(id);
+
+    return { message: 'Club eliminado correctamente (Soft Delete aplicado)' };
   }
 }

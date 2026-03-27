@@ -27,7 +27,7 @@ export class ClubController {
   }
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
-  @Get()
+  @Get('all')
   findAll() {
     return this.clubService.findAll();
   }
@@ -38,14 +38,21 @@ export class ClubController {
   findApproved() {
     return this.clubService.findApproved();
   }
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Modificar los datos de tu club (Solo para el dueño)' })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClubDto: UpdateClubDto) {
-    return this.clubService.update(+id, updateClubDto);
+  update(@Param('id') id: number, @Body() updateClubDto: UpdateClubDto,@Req() req:any) {
+    const userId= req.user.sub;
+    return this.clubService.update(id,updateClubDto,userId);
   }
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Eliminar tu club lógicamente (Solo para el dueño)' })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clubService.remove(+id);
+  remove(@Param('id') id: number,
+   @Req() req:any) {
+    const userId= req.user.sub;
+    return this.clubService.remove(id,userId);
   }
 }

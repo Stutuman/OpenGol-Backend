@@ -33,7 +33,7 @@ let FieldsService = class FieldsService {
         }
         catch (error) {
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred');
         }
     }
     async findAll() {
@@ -43,7 +43,7 @@ let FieldsService = class FieldsService {
         }
         catch (error) {
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred');
         }
     }
     async findByClub(clubId) {
@@ -61,7 +61,7 @@ let FieldsService = class FieldsService {
                 throw error;
             }
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred');
         }
     }
     async update(id, updateFieldDto) {
