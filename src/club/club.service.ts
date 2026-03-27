@@ -61,12 +61,29 @@ export class ClubService {
     }
   }
 
-  findAll() {
-    return `This action returns all club`;
+  async findAll() {
+    try {
+      const clubs = await this.clubRepository.find();
+      return clubs;
+    
+    } catch (error) {
+    console.error(error);
+    throw new InternalServerErrorException('An error occurred');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} club`;
+  async findApproved() {
+    try {
+      // Solo traemos los clubes que ya pasaron tu auditoría
+      const clubs = await this.clubRepository.find({
+        where: { status: ClubStatus.APPROVED },
+      });
+
+      return clubs;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Error al recuperar la lista de clubes');
+    }
   }
 
   update(id: number, updateClubDto: UpdateClubDto) {

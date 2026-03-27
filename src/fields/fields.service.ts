@@ -23,7 +23,7 @@ export class FieldsService {
       };
     } catch(error){
       console.error(error)
-      throw new InternalServerErrorException('An error occurred while registering the user');
+      throw new InternalServerErrorException('An error occurred');
     }
     
   }
@@ -34,7 +34,7 @@ export class FieldsService {
       return fields;
     } catch(error){
       console.error(error);
-      throw new InternalServerErrorException('An error occurred while registering the user');
+      throw new InternalServerErrorException('An error occurred');
     }
   }
 
@@ -52,7 +52,7 @@ export class FieldsService {
         throw error;
       }
       console.error(error);
-      throw new InternalServerErrorException('An error occurred while registering the user');
+      throw new InternalServerErrorException('An error occurred');
     }
   }
 

@@ -25,15 +25,18 @@ export class ClubController {
   approveClub(@Param('id', ParseIntPipe) id: number) {
     return this.clubService.approveClub(id);
   }
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.clubService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clubService.findOne(+id);
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
+  @Get()
+  @ApiOperation({ summary: 'Listar todos los clubes disponibles y aprobados' })
+  findApproved() {
+    return this.clubService.findApproved();
   }
 
   @Patch(':id')
