@@ -64,7 +64,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Field.prototype, "depositPrice", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'int' }),
     __metadata("design:type", Number)
 ], Field.prototype, "clubId", void 0);
 __decorate([

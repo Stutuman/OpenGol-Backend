@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsIn, IsInt, IsNumber, IsOptional, IsPositive, IsString, MaxLength, Min } from "class-validator";
+import { IsArray, IsBoolean, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, Min } from "class-validator";
 
 export class CreateFieldDto {
     @ApiProperty({description:'name of the field',example:'fied 1'})
@@ -38,8 +38,8 @@ export class CreateFieldDto {
     @IsOptional()
     depositPrice:number;
     @ApiPropertyOptional({ description: 'ID del club al que pertenece (temporal hasta hacer la relación)' })
-    @IsInt()
-    @IsOptional()
+    @IsNumber()
+    @IsNotEmpty()
     clubId:number;
 
 }

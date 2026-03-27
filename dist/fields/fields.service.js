@@ -17,13 +17,23 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const field_entity_1 = require("./entities/field.entity");
 const typeorm_2 = require("typeorm");
+const club_entity_1 = require("../club/entities/club.entity");
 let FieldsService = class FieldsService {
     fieldRepository;
-    constructor(fieldRepository) {
+    clubRepository;
+    constructor(fieldRepository, clubRepository) {
         this.fieldRepository = fieldRepository;
+        this.clubRepository = clubRepository;
     }
-    async createField(fieldDto) {
+    async createField(fieldDto, userId) {
         try {
+            const club = await this.clubRepository.findOneBy({ id: fieldDto.clubId });
+            if (!club) {
+                throw new common_1.NotFoundException(`el club con ID ${fieldDto.clubId} no existe`);
+            }
+            if (club.ownerId !== userId) {
+                throw new common_1.UnauthorizedException('no puedes agregar canchas en clubes ajenos');
+            }
             const newField = this.fieldRepository.create(fieldDto);
             await this.fieldRepository.save(newField);
             return {
@@ -32,8 +42,11 @@ let FieldsService = class FieldsService {
             };
         }
         catch (error) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('Ocurrió un error al registrar la cancha');
         }
     }
     async findAll() {
@@ -43,7 +56,7 @@ let FieldsService = class FieldsService {
         }
         catch (error) {
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred');
         }
     }
     async findByClub(clubId) {
@@ -61,26 +74,43 @@ let FieldsService = class FieldsService {
                 throw error;
             }
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred');
         }
     }
-    async update(id, updateFieldDto) {
-        const foundField = await this.fieldRepository.findOneBy({ id });
-        if (!foundField) {
-            throw new common_1.NotFoundException(`The field with id ${id} doesnt exist`);
+    async update(id, updateFieldDto, userId) {
+        try {
+            const foundField = await this.fieldRepository.findOneBy({ id });
+            if (!foundField) {
+                throw new common_1.NotFoundException(`The field with id ${id} doesnt exist`);
+            }
+            const club = await this.clubRepository.findOneBy({ id: foundField.clubId });
+            if (!club || club.ownerId !== userId) {
+                throw new common_1.UnauthorizedException('No tienes permiso para modificar canchas de otros clubes');
+            }
+            const updateField = this.fieldRepository.merge(foundField, updateFieldDto);
+            await this.fieldRepository.save(updateField);
+            return {
+                message: 'field updated successfully',
+                field: updateField
+            };
         }
-        const updateField = this.fieldRepository.merge(foundField, updateFieldDto);
-        await this.fieldRepository.save(updateField);
-        return {
-            message: 'field updated successfully',
-            field: updateField
-        };
+        catch (error) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            console.error(error);
+            throw new common_1.InternalServerErrorException('Error al actualizar la cancha');
+        }
     }
-    async remove(id) {
+    async remove(id, userId) {
         try {
             const foundField = await this.fieldRepository.findOneBy({ id });
             if (!foundField) {
                 throw new common_1.NotFoundException(`field with id ${id} does not exist`);
+            }
+            const club = await this.clubRepository.findOneBy({ id: foundField.clubId });
+            if (!club || club.ownerId !== userId) {
+                throw new common_1.UnauthorizedException('No tienes permiso para eliminar canchas de otros clubes');
             }
             await this.fieldRepository.softDelete(id);
             return {
@@ -88,11 +118,11 @@ let FieldsService = class FieldsService {
             };
         }
         catch (error) {
-            if (error instanceof common_1.NotFoundException) {
+            if (error instanceof common_1.NotFoundException || error instanceof common_1.UnauthorizedException) {
                 throw error;
             }
             console.error(error);
-            throw new common_1.InternalServerErrorException('An error occurred while registering the user');
+            throw new common_1.InternalServerErrorException('An error occurred while deleting the field');
         }
     }
 };
@@ -100,6 +130,8 @@ exports.FieldsService = FieldsService;
 exports.FieldsService = FieldsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(field_entity_1.Field)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(club_entity_1.Club)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], FieldsService);
 //# sourceMappingURL=fields.service.js.map
