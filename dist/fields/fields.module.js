@@ -12,12 +12,13 @@ const fields_service_1 = require("./fields.service");
 const fields_controller_1 = require("./fields.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const field_entity_1 = require("./entities/field.entity");
+const club_entity_1 = require("../club/entities/club.entity");
 let FieldsModule = class FieldsModule {
 };
 exports.FieldsModule = FieldsModule;
 exports.FieldsModule = FieldsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([field_entity_1.Field])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([field_entity_1.Field, club_entity_1.Club])],
         controllers: [fields_controller_1.FieldsController],
         providers: [fields_service_1.FieldsService],
     })

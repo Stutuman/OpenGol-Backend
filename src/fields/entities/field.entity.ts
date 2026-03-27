@@ -39,7 +39,7 @@ export class Field {
   depositPrice: number;
 
   // * ID club -> (Por ahora lo dejamos como un número simple, luego haremos la relación)
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'int'})
   clubId: number;
 
   // * Creado en fecha y fecha de última actualización

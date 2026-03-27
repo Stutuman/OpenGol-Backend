@@ -77,8 +77,8 @@ __decorate([
 ], CreateFieldDto.prototype, "depositPrice", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ description: 'ID del club al que pertenece (temporal hasta hacer la relación)' }),
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateFieldDto.prototype, "clubId", void 0);
 //# sourceMappingURL=create-field.dto.js.map

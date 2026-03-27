@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Req } from '@nestjs/common';
 import { FieldsService } from './fields.service';
 import { CreateFieldDto } from './dto/create-field.dto';
 import { UpdateFieldDto } from './dto/update-field.dto';
@@ -12,8 +12,9 @@ export class FieldsController {
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createFieldDto: CreateFieldDto) {
-    return this.fieldsService.createField(createFieldDto);
+  create(@Body() createFieldDto: CreateFieldDto, @Req () req:any) {
+    const userId= req.user.sub;
+    return this.fieldsService.createField(createFieldDto,userId);
   }
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
@@ -61,8 +62,9 @@ export class FieldsController {
     }
   })
   update(@Param('id',ParseIntPipe) id: number,
-   @Body() updateFieldDto: UpdateFieldDto) {
-    return this.fieldsService.update(id, updateFieldDto);
+   @Body() updateFieldDto: UpdateFieldDto, @Req() req:any) {
+    const userId= req.user.sub;
+    return this.fieldsService.update(id, updateFieldDto,userId);
   }
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
@@ -70,7 +72,8 @@ export class FieldsController {
   @ApiOperation({ summary: 'Eliminar una cancha (Soft Delete)' })
   @ApiParam({ name: 'id', description: 'ID de la cancha a dar de baja', type: Number, example: 1 })
   @Delete(':id')
-  remove(@Param('id',ParseIntPipe) id: number) {
-    return this.fieldsService.remove(id);
+  remove(@Param('id',ParseIntPipe) id: number,@Req() req:any) {
+    const userId= req.user.sub;
+    return this.fieldsService.remove(id,userId);
   }
 }

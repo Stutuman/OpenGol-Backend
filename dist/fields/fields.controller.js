@@ -25,8 +25,9 @@ let FieldsController = class FieldsController {
     constructor(fieldsService) {
         this.fieldsService = fieldsService;
     }
-    create(createFieldDto) {
-        return this.fieldsService.createField(createFieldDto);
+    create(createFieldDto, req) {
+        const userId = req.user.sub;
+        return this.fieldsService.createField(createFieldDto, userId);
     }
     findAll() {
         return this.fieldsService.findAll();
@@ -34,11 +35,13 @@ let FieldsController = class FieldsController {
     findFieldsByClub(clubId) {
         return this.fieldsService.findByClub(clubId);
     }
-    update(id, updateFieldDto) {
-        return this.fieldsService.update(id, updateFieldDto);
+    update(id, updateFieldDto, req) {
+        const userId = req.user.sub;
+        return this.fieldsService.update(id, updateFieldDto, userId);
     }
-    remove(id) {
-        return this.fieldsService.remove(id);
+    remove(id, req) {
+        const userId = req.user.sub;
+        return this.fieldsService.remove(id, userId);
     }
 };
 exports.FieldsController = FieldsController;
@@ -47,8 +50,9 @@ __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_field_dto_1.CreateFieldDto]),
+    __metadata("design:paramtypes", [create_field_dto_1.CreateFieldDto, Object]),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "create", null);
 __decorate([
@@ -101,8 +105,9 @@ __decorate([
     }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_field_dto_1.UpdateFieldDto]),
+    __metadata("design:paramtypes", [Number, update_field_dto_1.UpdateFieldDto, Object]),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "update", null);
 __decorate([
@@ -113,8 +118,9 @@ __decorate([
     (0, swagger_2.ApiParam)({ name: 'id', description: 'ID de la cancha a dar de baja', type: Number, example: 1 }),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", void 0)
 ], FieldsController.prototype, "remove", null);
 exports.FieldsController = FieldsController = __decorate([
