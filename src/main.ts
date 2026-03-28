@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
   const normalizeOrigin = (value: string) => value.replace(/\/+$/, '');
 
   const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
@@ -12,6 +13,10 @@ async function bootstrap() {
     .map((origin) => normalizeOrigin(origin))
     .filter(Boolean);
   const allowedOriginSet = new Set(allowedOrigins);
+
+  logger.log(
+    `Allowed CORS origins: ${allowedOrigins.length > 0 ? allowedOrigins.join(', ') : '(none configured)'}`,
+  );
 
   app.enableCors({
     origin: (
@@ -28,7 +33,14 @@ async function bootstrap() {
         return;
       }
 
-      callback(null, allowedOriginSet.has(normalizeOrigin(origin)));
+      const normalizedOrigin = normalizeOrigin(origin);
+      const isAllowed = allowedOriginSet.has(normalizedOrigin);
+
+      if (!isAllowed) {
+        logger.warn(`Blocked CORS origin: ${normalizedOrigin}`);
+      }
+
+      callback(null, isAllowed);
     },
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
