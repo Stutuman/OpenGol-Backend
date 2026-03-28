@@ -22,8 +22,7 @@ import { ClubModule } from './club/club.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
-      // IMPORTANTE: synchronize en false porque nosotros ya creamos la tabla a mano en pgAdmin
-      synchronize: true, 
+      synchronize: process.env.DB_SYNCHRONIZE === 'true',
       //dropSchema: true,
     }),
     UserModule,

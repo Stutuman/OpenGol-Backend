@@ -34,6 +34,7 @@ jobs:
           APP_DB_HOST: ${{ secrets.APP_DB_HOST }}
           APP_DB_PORT: ${{ secrets.APP_DB_PORT }}
           APP_DB_DATABASE: ${{ secrets.APP_DB_DATABASE }}
+          APP_DB_SYNCHRONIZE: ${{ secrets.APP_DB_SYNCHRONIZE }}
           APP_JWT_SECRET: ${{ secrets.APP_JWT_SECRET }}
           APP_CORS_ORIGIN: ${{ secrets.APP_CORS_ORIGIN }}
           APP_PORT: ${{ secrets.APP_PORT }}
@@ -49,6 +50,7 @@ jobs:
               "DB_HOST=${APP_DB_HOST}" \
               "DB_PORT=${APP_DB_PORT}" \
               "DB_DATABASE=${APP_DB_DATABASE}" \
+              "DB_SYNCHRONIZE=${APP_DB_SYNCHRONIZE}" \
               "JWT_SECRET=${APP_JWT_SECRET}" \
               "CORS_ORIGIN=${APP_CORS_ORIGIN}" \
               "PORT=${APP_PORT}" \
