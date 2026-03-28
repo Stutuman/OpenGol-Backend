@@ -43,17 +43,16 @@ jobs:
             set -e
             cd ~/OpenGol-Backend
 
-            cat > .env << EOL
-            DB_USER=${APP_DB_USER}
-            DB_PASSWORD=${APP_DB_PASSWORD}
-            DB_HOST=${APP_DB_HOST}
-            DB_PORT=${APP_DB_PORT}
-            DB_DATABASE=${APP_DB_DATABASE}
-            JWT_SECRET=${APP_JWT_SECRET}
-            CORS_ORIGIN=${APP_CORS_ORIGIN}
-            PORT=${APP_PORT}
-            NODE_ENV=${APP_NODE_ENV}
-            EOL
+            printf "%s\n" \
+              "DB_USER=${APP_DB_USER}" \
+              "DB_PASSWORD=${APP_DB_PASSWORD}" \
+              "DB_HOST=${APP_DB_HOST}" \
+              "DB_PORT=${APP_DB_PORT}" \
+              "DB_DATABASE=${APP_DB_DATABASE}" \
+              "JWT_SECRET=${APP_JWT_SECRET}" \
+              "CORS_ORIGIN=${APP_CORS_ORIGIN}" \
+              "PORT=${APP_PORT}" \
+              "NODE_ENV=${APP_NODE_ENV}" > .env
 
             git pull origin main
             docker compose up -d --build
