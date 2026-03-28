@@ -11,12 +11,27 @@ async function bootstrap() {
     .map((origin) => origin.trim())
     .map((origin) => normalizeOrigin(origin))
     .filter(Boolean);
+  const allowedOriginSet = new Set(allowedOrigins);
 
   app.enableCors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOriginSet.size === 0) {
+        callback(null, false);
+        return;
+      }
+
+      callback(null, allowedOriginSet.has(normalizeOrigin(origin)));
+    },
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
   });
   app.useGlobalPipes(new ValidationPipe({
     whitelist:true,
