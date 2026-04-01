@@ -2,23 +2,31 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import type { NextFunction, Request, Response } from 'express';
+import type { Express, NextFunction, Request, Response } from 'express';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
   const normalizeOrigin = (value: string) => value.replace(/\/+$/, '');
+  const expressApp = app.getHttpAdapter().getInstance() as Express;
 
-  app.set('trust proxy', true);
+  expressApp.set('trust proxy', true);
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
     const originHeader = req.headers.origin;
     const forwardedFor = req.headers['x-forwarded-for'];
     const clientIp = req.headers['cf-connecting-ip'];
-    const requestIp = Array.isArray(clientIp)
-      ? clientIp[0]
-      : clientIp ?? Array.isArray(forwardedFor)
-        ? forwardedFor[0]
-        : forwardedFor?.split(',')[0]?.trim() ?? req.ip;
+    let requestIp = req.ip;
+
+    if (Array.isArray(clientIp)) {
+      requestIp = clientIp[0] ?? req.ip;
+    } else if (clientIp) {
+      requestIp = clientIp;
+    } else if (Array.isArray(forwardedFor)) {
+      requestIp = forwardedFor[0] ?? req.ip;
+    } else if (forwardedFor) {
+      requestIp = forwardedFor.split(',')[0]?.trim() ?? req.ip;
+    }
 
     if (originHeader || req.method === 'OPTIONS') {
       logger.log(
@@ -67,30 +75,40 @@ async function bootstrap() {
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   });
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist:true,
-    forbidNonWhitelisted:true,
-    transform:true,
-  }));
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   const config = new DocumentBuilder()
-  .setTitle('openGol API')
-  .setDescription('Documentación de la API para la gestión de partidos y usuarios')
-  .setVersion('1.0')
-  .addBearerAuth({
-    type:'http',
-    scheme:'bearer',
-    bearerFormat:'JWT',
-    name:'JWT',
-    description:'Ingresa el token jwt',
-    in:'header'
-  },
-'access-token',)
-  .build()
-  const document= SwaggerModule.createDocument(app,config);
-  SwaggerModule.setup('api/docs',app,document);
-  await app.listen(process.env.PORT ?? 3000)
-  console.log('😶‍🌫️servidor corriendo en: http://localhost:3000')
-  console.log('documentacion en http://localhost:3000/api/docs')
-  ;
+    .setTitle('openGol API')
+    .setDescription(
+      'Documentación de la API para la gestión de partidos y usuarios',
+    )
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Ingresa el token jwt',
+        in: 'header',
+      },
+      'access-token',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  await app.listen(process.env.PORT ?? 3000);
+  console.log('😶‍🌫️servidor corriendo en: http://localhost:3000');
+  console.log('documentacion en http://localhost:3000/api/docs');
 }
-bootstrap();
+
+void bootstrap();
