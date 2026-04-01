@@ -49,6 +49,9 @@ export class Club {
   @Column({ type: 'int', default: 0 })
   strikes: number;
 
+  @Column({ type: 'uuid', nullable: true })
+  logoAttachmentId?: string | null;
+
   // --- AUDITORÍA Y SOFT DELETE ---
 
   @CreateDateColumn({ name: 'created_at' })

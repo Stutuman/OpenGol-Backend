@@ -5,9 +5,10 @@ import { ClubController } from './club.controller';
 import { Club } from './entities/club.entity';
 // Importamos la entidad User para que el módulo la conozca
 import { User } from '../users/entities/user.entity'; // Ajustá esta ruta si es necesario
+import { Attachment } from '../attachments/entities/attachment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Club, User])],
+  imports: [TypeOrmModule.forFeature([Club, User, Attachment])],
   controllers: [ClubController],
   providers: [ClubService],
 })

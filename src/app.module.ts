@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,11 +8,13 @@ import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FieldsModule } from './fields/fields.module';
 import { ClubModule } from './club/club.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
     // 1. Esto lee tu archivo .env automáticamente
-    ConfigModule.forRoot(), 
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     
     // 2. Esto configura la conexión a PostgreSQL
     TypeOrmModule.forRoot({
@@ -29,6 +32,7 @@ import { ClubModule } from './club/club.module';
     AuthModule,
     FieldsModule,
     ClubModule,
+    AttachmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

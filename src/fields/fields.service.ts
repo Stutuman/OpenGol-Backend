@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Field } from './entities/field.entity';
 import { Repository } from 'typeorm';
 import { Club } from 'src/club/entities/club.entity';
+import { Attachment } from '../attachments/entities/attachment.entity';
 
 @Injectable()
 export class FieldsService {
@@ -13,6 +14,8 @@ export class FieldsService {
     private fieldRepository: Repository<Field>,
     @InjectRepository(Club)
     private clubRepository: Repository<Club>,
+    @InjectRepository(Attachment)
+    private attachmentRepository: Repository<Attachment>,
   ){}
 
   async createField(fieldDto: CreateFieldDto,userId:number) {
@@ -30,7 +33,7 @@ export class FieldsService {
       await this.fieldRepository.save(newField);
       return {
         message:'field successfuly registered',
-        field:newField
+        field:await this.serializeField(newField)
       };
     } catch(error){
       if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
@@ -46,7 +49,7 @@ export class FieldsService {
   async findAll() {
     try{
       const fields = await this.fieldRepository.find();
-      return fields;
+      return Promise.all(fields.map((field) => this.serializeField(field)));
     } catch(error){
       console.error(error);
       throw new InternalServerErrorException('An error occurred');
@@ -59,7 +62,7 @@ export class FieldsService {
       if (!field) {
         throw new NotFoundException(`field with id ${id} does not exist`);
       }
-      return field;
+      return this.serializeField(field);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -77,7 +80,7 @@ export class FieldsService {
     if(fields.length===0){
       throw new NotFoundException(`no fields found for club with id ${clubId}`)
     }
-    return fields;
+    return Promise.all(fields.map((field) => this.serializeField(field)));
     } catch (error) {
       if (error instanceof NotFoundException){
         throw error;
@@ -108,7 +111,7 @@ export class FieldsService {
       
       return {
         message: 'field updated successfully',
-        field: updateField
+        field: await this.serializeField(updateField)
       };
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
@@ -147,5 +150,31 @@ export class FieldsService {
       // QA TIP: Acá tenías un mensaje copiado y pegado de los usuarios. ¡Ya lo corregí!
       throw new InternalServerErrorException('An error occurred while deleting the field');
     }
+  }
+
+  private async serializeField(field: Field) {
+    const attachmentIds = field.imageAttachmentIds ?? [];
+    const attachments = attachmentIds.length
+      ? await this.attachmentRepository
+          .createQueryBuilder('attachment')
+          .where('attachment.id IN (:...ids)', { ids: attachmentIds })
+          .andWhere('attachment.deletedAt IS NULL')
+          .getMany()
+      : [];
+
+    const attachmentById = new Map(
+      attachments.map((attachment) => [attachment.id, attachment]),
+    );
+    const imageUrls = attachmentIds.length
+      ? attachmentIds
+          .map((attachmentId) => attachmentById.get(attachmentId)?.publicUrl)
+          .filter((publicUrl): publicUrl is string => Boolean(publicUrl))
+      : (field.photos ?? []);
+
+    return {
+      ...field,
+      photos: imageUrls,
+      imageUrls,
+    };
   }
 }
