@@ -2,10 +2,32 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { NextFunction, Request, Response } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
   const normalizeOrigin = (value: string) => value.replace(/\/+$/, '');
+
+  app.set('trust proxy', true);
+
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    const originHeader = req.headers.origin;
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const clientIp = req.headers['cf-connecting-ip'];
+    const requestIp = Array.isArray(clientIp)
+      ? clientIp[0]
+      : clientIp ?? Array.isArray(forwardedFor)
+        ? forwardedFor[0]
+        : forwardedFor?.split(',')[0]?.trim() ?? req.ip;
+
+    if (originHeader || req.method === 'OPTIONS') {
+      logger.log(
+        `Incoming request ${req.method} ${req.originalUrl} origin=${originHeader ?? '(none)'} ip=${requestIp}`,
+      );
+    }
+
+    next();
+  });
 
   const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
     .split(',')
