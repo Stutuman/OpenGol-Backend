@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   DeleteObjectCommand,
@@ -33,16 +37,24 @@ export class R2Service {
   constructor(private readonly configService: ConfigService<EnvConfig>) {
     const accountId = this.configService.get<string>('R2_ACCOUNT_ID');
     const accessKeyId = this.configService.get<string>('R2_ACCESS_KEY_ID');
-    const secretAccessKey = this.configService.get<string>('R2_SECRET_ACCESS_KEY');
+    const secretAccessKey = this.configService.get<string>(
+      'R2_SECRET_ACCESS_KEY',
+    );
     const bucket = this.configService.get<string>('R2_BUCKET');
     const publicBaseUrl = this.configService.get<string>('R2_PUBLIC_BASE_URL');
 
-    if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !publicBaseUrl) {
+    if (
+      !accountId ||
+      !accessKeyId ||
+      !secretAccessKey ||
+      !bucket ||
+      !publicBaseUrl
+    ) {
       throw new InternalServerErrorException('Missing R2 configuration');
     }
 
     this.bucket = bucket;
-    this._publicBaseUrl = publicBaseUrl;
+    this._publicBaseUrl = publicBaseUrl.trim().replace(/\/+$/, '');
 
     this.s3 = new S3Client({
       region: 'auto',
@@ -53,6 +65,10 @@ export class R2Service {
 
   get publicBaseUrl(): string {
     return this._publicBaseUrl;
+  }
+
+  buildPublicUrl(objectKey: string): string {
+    return `${this._publicBaseUrl}/${objectKey.replace(/^\/+/, '')}`;
   }
 
   // ── Validate MIME (user-declared) ──────────────────────────────────

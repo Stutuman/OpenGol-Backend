@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity'; // Asegurate de renombrar el archivo a user.entity.ts
 import { Attachment } from '../attachments/entities/attachment.entity';
+import { normalizePublicAssetUrl } from '../attachments/public-url.util';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto'; // Renombrar archivo
 import { UpdateUserDto } from './dto/update-user.dto'; // Renombrar archivo
@@ -104,7 +105,7 @@ export class UsersService {
 
     return {
       ...safeUser,
-      avatarUrl: avatar?.publicUrl ?? null,
+      avatarUrl: normalizePublicAssetUrl(avatar?.publicUrl),
     };
   }
 }

@@ -6,6 +6,7 @@ import { Field } from './entities/field.entity';
 import { Repository } from 'typeorm';
 import { Club } from 'src/club/entities/club.entity';
 import { Attachment } from '../attachments/entities/attachment.entity';
+import { normalizePublicAssetUrl } from '../attachments/public-url.util';
 
 @Injectable()
 export class FieldsService {
@@ -167,9 +168,15 @@ export class FieldsService {
     );
     const imageUrls = attachmentIds.length
       ? attachmentIds
-          .map((attachmentId) => attachmentById.get(attachmentId)?.publicUrl)
+          .map((attachmentId) =>
+            normalizePublicAssetUrl(
+              attachmentById.get(attachmentId)?.publicUrl,
+            ),
+          )
           .filter((publicUrl): publicUrl is string => Boolean(publicUrl))
-      : (field.photos ?? []);
+      : (field.photos ?? [])
+          .map((photoUrl) => normalizePublicAssetUrl(photoUrl))
+          .filter((photoUrl): photoUrl is string => Boolean(photoUrl));
 
     return {
       ...field,

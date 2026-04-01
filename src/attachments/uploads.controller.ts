@@ -144,7 +144,7 @@ export class UploadsController {
     await this.r2Service.deleteObject(normalizedTmpKey);
 
     // 8. Save only the final asset in DB, never the tmp
-    const publicUrl = `${this.r2Service.publicBaseUrl}/${finalKey}`;
+    const publicUrl = this.r2Service.buildPublicUrl(finalKey);
     const saved = await this.attachmentsService.create({
       entityId: pending.entityId,
       kind: pending.kind,

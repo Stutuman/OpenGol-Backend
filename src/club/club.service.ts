@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Club, ClubStatus } from './entities/club.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { Attachment } from '../attachments/entities/attachment.entity';
+import { normalizePublicAssetUrl } from '../attachments/public-url.util';
 
 @Injectable()
 export class ClubService {
@@ -131,7 +132,7 @@ export class ClubService {
 
     return {
       ...club,
-      logoUrl: logo?.publicUrl ?? null,
+      logoUrl: normalizePublicAssetUrl(logo?.publicUrl),
     };
   }
 }
