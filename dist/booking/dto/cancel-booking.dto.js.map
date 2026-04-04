@@ -1,1 +1,0 @@
-{"version":3,"file":"cancel-booking.dto.js","sourceRoot":"","sources":["../../../src/booking/dto/cancel-booking.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAsD;AACtD,6CAA8C;AAC9C,MAAa,gBAAgB;IAOzB,kBAAkB,CAAQ;CAC7B;AARD,4CAQC;AADG;IANC,IAAA,qBAAW,EAAC;QACT,OAAO,EAAE,8CAA8C;QACvD,WAAW,EAAE,0CAA0C;KAC1D,CAAC;IACD,IAAA,0BAAQ,GAAE;IACV,IAAA,4BAAU,GAAE;;4DACa"}
