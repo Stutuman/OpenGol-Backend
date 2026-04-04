@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingController = void 0;
 const common_1 = require("@nestjs/common");
@@ -19,6 +20,8 @@ const create_booking_dto_1 = require("./dto/create-booking.dto");
 const swagger_1 = require("@nestjs/swagger");
 const auth_guard_1 = require("../auth/auth.guard");
 const cancel_booking_dto_1 = require("./dto/cancel-booking.dto");
+const get_bookings_filter_dto_1 = require("./dto/get-bookings-filter.dto");
+const update_payment_dto_1 = require("./dto/update-payment.dto");
 let BookingController = class BookingController {
     bookingService;
     constructor(bookingService) {
@@ -28,9 +31,15 @@ let BookingController = class BookingController {
         const userId = req.user.sub;
         return this.bookingService.create(createBookingDto, userId);
     }
+    findAll(filters) {
+        return this.bookingService.findAllWithFilters(filters);
+    }
     cancel(id, cancelBookingDto, req) {
         const userId = req.user.sub;
         return this.bookingService.cancel(id, userId, cancelBookingDto);
+    }
+    updatePayment(id, updatePaymentDto) {
+        return this.bookingService.updatePaymentStatus(id, updatePaymentDto);
     }
 };
 exports.BookingController = BookingController;
@@ -48,6 +57,16 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Listar reservas por fecha, club y estado' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [get_bookings_filter_dto_1.GetBookingsFilterDto]),
+    __metadata("design:returntype", void 0)
+], BookingController.prototype, "findAll", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Patch)(':id/cancel'),
     (0, swagger_1.ApiOperation)({ summary: 'Cancelar una reserva indicando el motivo' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
@@ -57,6 +76,17 @@ __decorate([
     __metadata("design:paramtypes", [Number, cancel_booking_dto_1.CancelBookingDto, Object]),
     __metadata("design:returntype", void 0)
 ], BookingController.prototype, "cancel", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Patch)(':id/payment'),
+    (0, swagger_1.ApiOperation)({ summary: 'Registrar pago total o parcial (seña) de la reserva' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, typeof (_a = typeof update_payment_dto_1.UpdatePaymentDto !== "undefined" && update_payment_dto_1.UpdatePaymentDto) === "function" ? _a : Object]),
+    __metadata("design:returntype", void 0)
+], BookingController.prototype, "updatePayment", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('bookings'),
     (0, common_1.Controller)('booking'),

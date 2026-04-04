@@ -32,6 +32,15 @@ let BookingService = class BookingService {
             if (!field) {
                 throw new common_1.NotFoundException(`La cancha con ID ${fieldId} no existe.`);
             }
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+            const startInHours = startHour + (startMinute / 60);
+            const endInHours = endHour + (endMinute / 60);
+            const durationInHours = endInHours - startInHours;
+            if (durationInHours <= 0) {
+                throw new common_1.BadRequestException('La hora de finalización debe ser posterior a la de inicio.');
+            }
+            const calculatedTotalPrice = durationInHours * field.pricePerHour;
             const overlappingBooking = await this.bookingRepository.createQueryBuilder('booking')
                 .where('booking.fieldId = :fieldId', { fieldId })
                 .andWhere('booking.bookingDate = :bookingDate', { bookingDate })
@@ -50,7 +59,7 @@ let BookingService = class BookingService {
             const newBooking = this.bookingRepository.create({
                 ...createBookingDto,
                 playerId: finalPlayerId,
-                totalPrice: 0,
+                totalPrice: calculatedTotalPrice,
             });
             await this.bookingRepository.save(newBooking);
             return {
@@ -65,6 +74,55 @@ let BookingService = class BookingService {
             console.error(error);
             throw new common_1.InternalServerErrorException('Ocurrió un error al procesar la reserva.');
         }
+    }
+    async updatePaymentStatus(id, updatePaymentDto) {
+        try {
+            const booking = await this.bookingRepository.findOneBy({ id });
+            if (!booking) {
+                throw new common_1.NotFoundException(`La reserva con ID ${id} no existe.`);
+            }
+            booking.paymentStatus = updatePaymentDto.paymentStatus;
+            await this.bookingRepository.save(booking);
+            return {
+                message: '¡Estado de pago actualizado correctamente!',
+                booking
+            };
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            console.error(error);
+            throw new common_1.InternalServerErrorException('Error al actualizar el pago.');
+        }
+    }
+    async findAllWithFilters(filters) {
+        const { clubId, startDate, endDate, includeCancelled } = filters;
+        let fieldIds = [];
+        if (clubId) {
+            const fields = await this.fieldRepository.find({ where: { clubId: parseInt(clubId) } });
+            if (fieldIds.length === 0)
+                return [];
+        }
+        const query = this.bookingRepository.createQueryBuilder('booking');
+        if (fieldIds.length > 0) {
+            query.andWhere('booking.fieldId IN (:...fieldIds)', { fieldIds });
+        }
+        if (startDate) {
+            query.andWhere('booking.bookingDate >= :startDate', { startDate });
+        }
+        if (endDate) {
+            query.andWhere('booking.bookingDate <= :endDate', { endDate });
+        }
+        if (includeCancelled !== 'true') {
+            query.andWhere('booking.status != :cancelledStatus', {
+                cancelledStatus: booking_entity_1.BookingStatus.CANCELLED
+            });
+        }
+        query.orderBy('booking.bookingDate', 'ASC')
+            .addOrderBy('booking.startTime', 'ASC');
+        const bookings = await query.getMany();
+        return bookings;
     }
     async cancel(id, userId, cancelBookingDto) {
         try {
@@ -90,6 +148,31 @@ let BookingService = class BookingService {
             console.error(error);
             throw new common_1.InternalServerErrorException('Error al intentar cancelar la reserva.');
         }
+    }
+    async getDashboardStats() {
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const firstDayString = firstDayOfMonth.toISOString().split('T')[0];
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const lastDayString = lastDayOfMonth.toISOString().split('T')[0];
+        const todayBookingsCount = await this.bookingRepository.createQueryBuilder('booking')
+            .where('booking.bookingDate = :todayString', { todayString })
+            .andWhere('booking.status != :cancelledStatus', { cancelledStatus: booking_entity_1.BookingStatus.CANCELLED })
+            .getCount();
+        const monthlyIncomeResult = await this.bookingRepository.createQueryBuilder('booking')
+            .select('SUM(booking.totalPrice)', 'total')
+            .where('booking.bookingDate >= :firstDay', { firstDay: firstDayString })
+            .andWhere('booking.bookingDate <= :lastDay', { lastDay: lastDayString })
+            .andWhere('booking.status != :cancelledStatus', { cancelledStatus: booking_entity_1.BookingStatus.CANCELLED })
+            .andWhere('booking.paymentStatus = :paidStatus', { paidStatus: booking_entity_1.PaymentStatus.PAID })
+            .getRawOne();
+        const monthlyIncome = monthlyIncomeResult.total ? parseFloat(monthlyIncomeResult.total) : 0;
+        return {
+            date: todayString,
+            reservasHoy: todayBookingsCount,
+            ingresosMes: monthlyIncome,
+        };
     }
 };
 exports.BookingService = BookingService;
