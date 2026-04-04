@@ -3,10 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity'; // Importamos el molde
+import { Attachment } from '../attachments/entities/attachment.entity';
 
 @Module({
   // Le decimos a TypeOrm que use este molde específico
-  imports: [TypeOrmModule.forFeature([User])], 
+  imports: [TypeOrmModule.forFeature([User, Attachment])], 
   controllers: [UsersController],
   providers: [UsersService],
   exports:[UsersService]

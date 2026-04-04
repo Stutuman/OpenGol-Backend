@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Club, ClubStatus } from './entities/club.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
+import { Attachment } from '../attachments/entities/attachment.entity';
+import { normalizePublicAssetUrl } from '../attachments/public-url.util';
 
 @Injectable()
 export class ClubService {
@@ -13,6 +15,8 @@ export class ClubService {
     private clubRepository : Repository<Club>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Attachment)
+    private attachmentRepository: Repository<Attachment>,
   ){}
   async create(createClubDto: CreateClubDto,userId:number){
     try {
@@ -25,7 +29,7 @@ export class ClubService {
       const savedClub = await this.clubRepository.save(newClub);
       return {
         message: 'El club fue registrado y está pendiente de aprobación.',
-        club: savedClub,
+        club: await this.serializeClub(savedClub),
       };
     } catch (error) {
       console.error(error);
@@ -40,7 +44,7 @@ export class ClubService {
         throw new NotFoundException(`el club con ID ${id} no existe`)
       }
       if(club.status===ClubStatus.APPROVED){
-        return {message: 'el club ya estaba aprobado previamente.',club};
+        return {message: 'el club ya estaba aprobado previamente.',club: await this.serializeClub(club)};
       }
       club.status=ClubStatus.APPROVED;
       const updatedClub=await this.clubRepository.save(club);
@@ -51,7 +55,7 @@ export class ClubService {
       }
       return {
         message: '¡Club aprobado exitosamente! El creador ahora es OWNER.',
-        club: updatedClub
+        club: await this.serializeClub(updatedClub)
       };
       
     } catch (error) {
@@ -64,7 +68,7 @@ export class ClubService {
   async findAll() {
     try {
       const clubs = await this.clubRepository.find();
-      return clubs;
+      return Promise.all(clubs.map((club) => this.serializeClub(club)));
     
     } catch (error) {
     console.error(error);
@@ -79,7 +83,7 @@ export class ClubService {
         where: { status: ClubStatus.APPROVED },
       });
 
-      return clubs;
+      return Promise.all(clubs.map((club) => this.serializeClub(club)));
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Error al recuperar la lista de clubes');
@@ -99,7 +103,7 @@ export class ClubService {
     await this.clubRepository.save(updatedClub);
     return{
       message:'Club update succesfully',
-      club:updatedClub
+      club:await this.serializeClub(updatedClub)
     };
   }
 
@@ -117,5 +121,18 @@ export class ClubService {
     await this.clubRepository.softDelete(id);
 
     return { message: 'Club eliminado correctamente (Soft Delete aplicado)' };
+  }
+
+  private async serializeClub(club: Club) {
+    const logo = club.logoAttachmentId
+      ? await this.attachmentRepository.findOne({
+          where: { id: club.logoAttachmentId },
+        })
+      : null;
+
+    return {
+      ...club,
+      logoUrl: normalizePublicAssetUrl(logo?.publicUrl),
+    };
   }
 }

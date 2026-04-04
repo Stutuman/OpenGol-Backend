@@ -26,6 +26,9 @@ export class Field {
   @Column('text', { array: true, default: [] })
   photos: string[];
 
+  @Column('text', { array: true, default: [] })
+  imageAttachmentIds: string[];
+
   // * Pricing (Precio fijo por hora)
   @Column('decimal', { precision: 10, scale: 2 })
   pricePerHour: number;

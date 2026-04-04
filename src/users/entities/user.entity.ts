@@ -33,6 +33,9 @@ export class User {
   })
   role:UserRole;
 
+  @Column({ type: 'uuid', nullable: true })
+  avatarAttachmentId?: string | null;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt:Date;
 }
