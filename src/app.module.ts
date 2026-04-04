@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,7 +13,8 @@ import { BookingModule } from './booking/booking.module';
 @Module({
   imports: [
     // 1. Esto lee tu archivo .env automáticamente
-    ConfigModule.forRoot(), 
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     
     // 2. Esto configura la conexión a PostgreSQL
     TypeOrmModule.forRoot({
@@ -23,8 +25,7 @@ import { BookingModule } from './booking/booking.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
-      // IMPORTANTE: synchronize en false porque nosotros ya creamos la tabla a mano en pgAdmin
-      synchronize: true, 
+      synchronize: process.env.DB_SYNCHRONIZE === 'true',
       //dropSchema: true,
     }),
     UserModule,

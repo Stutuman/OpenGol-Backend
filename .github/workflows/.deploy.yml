@@ -28,10 +28,44 @@ jobs:
 
       - name: Deploy on server
         shell: bash
+        env:
+          APP_DB_USER: ${{ secrets.APP_DB_USER }}
+          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          APP_DB_HOST: ${{ secrets.APP_DB_HOST }}
+          APP_DB_PORT: ${{ secrets.APP_DB_PORT }}
+          APP_DB_DATABASE: ${{ secrets.APP_DB_DATABASE }}
+          APP_DB_SYNCHRONIZE: ${{ secrets.APP_DB_SYNCHRONIZE }}
+          APP_JWT_SECRET: ${{ secrets.APP_JWT_SECRET }}
+          APP_CORS_ORIGIN: ${{ secrets.APP_CORS_ORIGIN }}
+          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_NODE_ENV: ${{ secrets.APP_NODE_ENV }}
+          APP_R2_ACCOUNT_ID: ${{ secrets.APP_R2_ACCOUNT_ID }}
+          APP_R2_BUCKET: ${{ secrets.APP_R2_BUCKET }}
+          APP_R2_ACCESS_KEY_ID: ${{ secrets.APP_R2_ACCESS_KEY_ID }}
+          APP_R2_SECRET_ACCESS_KEY: ${{ secrets.APP_R2_SECRET_ACCESS_KEY }}
+          APP_R2_PUBLIC_BASE_URL: ${{ secrets.APP_R2_PUBLIC_BASE_URL }}
         run: |
-          ssh -o StrictHostKeyChecking=yes -i deploy_key ubuntu@${{ secrets.SERVER_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=yes -i deploy_key ubuntu@${{ secrets.SERVER_HOST }} << EOF
             set -e
             cd ~/OpenGol-Backend
+
+            printf "%s\n" \
+              "DB_USER=${APP_DB_USER}" \
+              "DB_PASSWORD=${APP_DB_PASSWORD}" \
+              "DB_HOST=${APP_DB_HOST}" \
+              "DB_PORT=${APP_DB_PORT}" \
+              "DB_DATABASE=${APP_DB_DATABASE}" \
+              "DB_SYNCHRONIZE=${APP_DB_SYNCHRONIZE}" \
+              "JWT_SECRET=${APP_JWT_SECRET}" \
+              "CORS_ORIGIN=${APP_CORS_ORIGIN}" \
+              "PORT=${APP_PORT}" \
+              "NODE_ENV=${APP_NODE_ENV}" \
+              "R2_ACCOUNT_ID=${APP_R2_ACCOUNT_ID}" \
+              "R2_BUCKET=${APP_R2_BUCKET}" \
+              "R2_ACCESS_KEY_ID=${APP_R2_ACCESS_KEY_ID}" \
+              "R2_SECRET_ACCESS_KEY=${APP_R2_SECRET_ACCESS_KEY}" \
+              "R2_PUBLIC_BASE_URL=${APP_R2_PUBLIC_BASE_URL}" > .env
+
             git pull origin main
             docker compose up -d --build
             docker image prune -f

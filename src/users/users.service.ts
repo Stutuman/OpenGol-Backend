@@ -2,6 +2,8 @@ import { Injectable, UnauthorizedException, InternalServerErrorException, Confli
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity'; // Asegurate de renombrar el archivo a user.entity.ts
+import { Attachment } from '../attachments/entities/attachment.entity';
+import { normalizePublicAssetUrl } from '../attachments/public-url.util';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto'; // Renombrar archivo
 import { UpdateUserDto } from './dto/update-user.dto'; // Renombrar archivo
@@ -11,6 +13,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Attachment)
+    private attachmentRepository: Repository<Attachment>,
   ) {}
 
   async getProfile(id: number) {
@@ -19,9 +23,8 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
-    const { passwordHash, ...safeUser } = user;
-    return safeUser;  
+
+    return this.serializeUser(user);  
   }
 
   async remove() {
@@ -85,12 +88,24 @@ export class UsersService {
     // Merge de datos
     const updatedUser = this.userRepository.merge(foundUser, updateData);
     await this.userRepository.save(updatedUser);
-
-    const { passwordHash, ...safeUser } = updatedUser;
     
     return {
       message: 'Profile updated successfully!',
-      user: safeUser,
+      user: await this.serializeUser(updatedUser),
+    };
+  }
+
+  private async serializeUser(user: User) {
+    const { passwordHash, ...safeUser } = user;
+    const avatar = user.avatarAttachmentId
+      ? await this.attachmentRepository.findOne({
+          where: { id: user.avatarAttachmentId },
+        })
+      : null;
+
+    return {
+      ...safeUser,
+      avatarUrl: normalizePublicAssetUrl(avatar?.publicUrl),
     };
   }
 }
