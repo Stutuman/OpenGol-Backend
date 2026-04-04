@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ParseIntPipe } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
-
+import { ApiTags,ApiBearerAuth,ApiOperation } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { CancelBookingDto } from './dto/cancel-booking.dto';
+@ApiTags('bookings')
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
-
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingService.create(createBookingDto);
+  @ApiOperation({summary: 'Crear una nueva reserva'})
+  create(@Body() createBookingDto: CreateBookingDto, @Req() req:any) {
+    const userId=req.user.sub;
+    return this.bookingService.create(createBookingDto,userId);
+  }
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard)
+  @Patch(':id/cancel')
+  @ApiOperation({ summary: 'Cancelar una reserva indicando el motivo' })
+  cancel(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() cancelBookingDto: CancelBookingDto,
+    @Req() req: any
+  ) {
+    const userId = req.user.sub;
+    return this.bookingService.cancel(id, userId, cancelBookingDto);
   }
 
-  @Get()
-  findAll() {
-    return this.bookingService.findAll();
-  }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookingService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingService.update(+id, updateBookingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookingService.remove(+id);
-  }
 }

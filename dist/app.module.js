@@ -16,6 +16,7 @@ const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
 const fields_module_1 = require("./fields/fields.module");
 const club_module_1 = require("./club/club.module");
+const booking_module_1 = require("./booking/booking.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -37,6 +38,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             fields_module_1.FieldsModule,
             club_module_1.ClubModule,
+            booking_module_1.BookingModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
