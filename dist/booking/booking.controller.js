@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingController = void 0;
 const common_1 = require("@nestjs/common");
@@ -26,6 +25,9 @@ let BookingController = class BookingController {
     bookingService;
     constructor(bookingService) {
         this.bookingService = bookingService;
+    }
+    getStats() {
+        return this.bookingService.getDashboardStats();
     }
     create(createBookingDto, req) {
         const userId = req.user.sub;
@@ -43,6 +45,15 @@ let BookingController = class BookingController {
     }
 };
 exports.BookingController = BookingController;
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access-token'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Get)('dashboard-stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtener estadísticas en tiempo real para el Dashboard' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], BookingController.prototype, "getStats", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access-token'),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
@@ -84,7 +95,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, typeof (_a = typeof update_payment_dto_1.UpdatePaymentDto !== "undefined" && update_payment_dto_1.UpdatePaymentDto) === "function" ? _a : Object]),
+    __metadata("design:paramtypes", [Number, update_payment_dto_1.UpdatePaymentDto]),
     __metadata("design:returntype", void 0)
 ], BookingController.prototype, "updatePayment", null);
 exports.BookingController = BookingController = __decorate([

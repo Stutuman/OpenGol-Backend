@@ -6,6 +6,11 @@ import { UpdatePaymentDto } from './dto/update-payment.dto';
 export declare class BookingController {
     private readonly bookingService;
     constructor(bookingService: BookingService);
+    getStats(): Promise<{
+        date: string;
+        reservasHoy: number;
+        ingresosMes: number;
+    }>;
     create(createBookingDto: CreateBookingDto, req: any): Promise<{
         message: string;
         booking: import("./entities/booking.entity").Booking;
