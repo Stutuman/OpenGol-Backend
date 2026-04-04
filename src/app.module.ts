@@ -8,7 +8,7 @@ import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { FieldsModule } from './fields/fields.module';
 import { ClubModule } from './club/club.module';
-import { AttachmentsModule } from './attachments/attachments.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
     AuthModule,
     FieldsModule,
     ClubModule,
-    AttachmentsModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -19,15 +19,11 @@ export class FieldsController {
     return this.fieldsService.createField(createFieldDto,userId);
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.fieldsService.findAll();
   }
 
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard)
   @Get('club/:clubId')
   @ApiParam({ name: 'clubId', description: 'ID del club', example: 0 })
   findFieldsByClub(@Param('clubId', ParseIntPipe) clubId: number) {
@@ -85,7 +81,6 @@ export class FieldsController {
 
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard)
-  @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una cancha (Soft Delete)' })
   @ApiParam({
     name: 'id',
