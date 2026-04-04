@@ -26,14 +26,14 @@ export class Booking {
 
   // --- MUNDO 1: USUARIO CON CUENTA ---
   @Column({ type: 'int', nullable: true })
-  playerId: number; 
+  playerId: number|null; 
 
   // --- MUNDO 2: USUARIO DE MOSTRADOR / TELÉFONO ---
   @Column({ type: 'varchar', nullable: true })
-  guestName: string;
+  guestName: string|null;
 
   @Column({ type: 'varchar', nullable: true })
-  guestPhone: string;
+  guestPhone: string|null;
 
   // --- EL TIEMPO ---
   @Column({ type: 'date' })
@@ -57,7 +57,7 @@ export class Booking {
 
   // --- LAS IDEAS DE TU GRÁFICO ---
   @Column({ type: 'varchar', nullable: true })
-  cancellationReason: string; // "Llovió", "No llegaron a ser 10", etc.
+  cancellationReason: string|null; // "Llovió", "No llegaron a ser 10", etc.
 
   @CreateDateColumn()
   createdAt: Date;
